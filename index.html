@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Grammar Helper Bot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    textarea {
+      width: 100%;
+      height: 260px;
+    }
+    input {
+      width: 75%;
+    }
+  </style>
+</head>
+
+<body>
+  <h3>🌸 Grammar Helper Bot</h3>
+
+  <textarea id="chat" readonly></textarea><br><br>
+
+  <input id="input" placeholder="Type your sentence here..." />
+  <button onclick="send()">Send</button>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbws-ZE2f4c1UuJJwLwVaEeMh3dza_sURLOvbRgQ9JgNmKzgeUNxxQk1ouf_BlqhU1J8Aw/exec";
+
+    async function send() {
+      const input = document.getElementById("input");
+      const chat = document.getElementById("chat");
+
+      if (!input.value.trim()) return;
+
+      chat.value += "You: " + input.value + "\n";
+
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ message: input.value })
+      });
+
+      const data = await response.json();
+      chat.value += "Bot: " + data.reply + "\n\n";
+
+      input.value = "";
+    }
+  </script>
+</body>
+</html>
+
