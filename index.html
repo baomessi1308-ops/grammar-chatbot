@@ -1,54 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Grammar Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    #chatbox {
+      background: #ffffff;
+      border: 1px solid #ccc;
+      height: 300px;
+      padding: 10px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .user {
+      color: #000;
+      margin-bottom: 5px;
+    }
+    .bot {
+      color: #0077cc;
+      margin-bottom: 10px;
+    }
+    input {
+      width: 75%;
+      padding: 8px;
+    }
+    button {
+      padding: 8px 12px;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Grammar Helper Bot</h2>
+<h2>📘 Grammar Helper Bot</h2>
 
-<div id="chatbox" style="border:1px solid #ccc; height:200px; padding:5px; overflow:auto;"></div>
+<div id="chatbox"></div>
 
-<input id="userInput" type="text" placeholder="Type your sentence..." />
+<input id="userInput" type="text" placeholder="Type your English sentence..." />
 <button onclick="sendMessage()">Send</button>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwYLQivEQQUl_mvtGF3o1XhipftmWn13TTZqc8EEv4cCD6SI60tNiobEjiFg_Quvxo_Cw/exec";
+  // 🔴 DÁN LINK /exec CỦA BẠN VÀO ĐÂY
+  const API_URL = "https://script.google.com/macros/s/AKfycbwi_6YCB0P4fSd5amBk3xG7SWfQ_ECUMDRpowPUsgbtJB2yeoyfOD98rYCGoriECo_5oA/exec";
 
-function addMessage(sender, text) {
-  const chatbox = document.getElementById("chatbox");
-  const div = document.createElement("div");
-  div.textContent = sender + ": " + text;
-  chatbox.appendChild(div);
-  chatbox.scrollTop = chatbox.scrollHeight;
-}
+  function addMessage(sender, text) {
+    const chatbox = document.getElementById("chatbox");
+    const div = document.createElement("div");
+    div.className = sender === "You" ? "user" : "bot";
+    div.textContent = sender + ": " + text;
+    chatbox.appendChild(div);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
 
-function sendMessage() {
-  const input = document.getElementById("userInput");
-  const userText = input.value.trim();
-  if (!userText) return;
+  function sendMessage() {
+    const input = document.getElementById("userInput");
+    const userText = input.value.trim();
+    if (!userText) return;
 
-  addMessage("You", userText);
-  input.value = "";
+    addMessage("You", userText);
+    input.value = "";
 
-  fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: userText })
-  })
-  .then(res => res.json())
-  .then(data => {
-    addMessage("Bot", data.reply);
-  })
-  .catch(err => {
-    addMessage("Bot", "❌ Cannot connect to server");
-    console.error(err);
-  });
-}
+    const url = API_URL + "?message=" + encodeURIComponent(userText);
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        addMessage("Bot", data.reply);
+      })
+      .catch(err => {
+        addMessage("Bot", "❌ Cannot connect to server");
+        console.error(err);
+      });
+  }
 </script>
 
 </body>
-</html>
-
-
