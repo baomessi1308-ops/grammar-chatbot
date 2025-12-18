@@ -2,51 +2,53 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Grammar Helper Bot</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-    textarea {
-      width: 100%;
-      height: 260px;
-    }
-    input {
-      width: 75%;
-    }
-  </style>
+  <title>Grammar Chatbot</title>
 </head>
-
 <body>
-  <h3>🌸 Grammar Helper Bot</h3>
 
-  <textarea id="chat" readonly></textarea><br><br>
+<h2>Grammar Helper Bot</h2>
 
-  <input id="input" placeholder="Type your sentence here..." />
-  <button onclick="send()">Send</button>
+<div id="chatbox" style="border:1px solid #ccc; height:200px; padding:5px; overflow:auto;"></div>
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwi2YaqSbPdIyYI0yI1xISKohISErR64YhHnK6MY2Q7LeT5TK46VlEFFtxAoT--Ei9E5A/exec";
+<input id="userInput" type="text" placeholder="Type your sentence..." />
+<button onclick="sendMessage()">Send</button>
 
-    async function send() {
-      const input = document.getElementById("input");
-      const chat = document.getElementById("chat");
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwYLQivEQQUl_mvtGF3o1XhipftmWn13TTZqc8EEv4cCD6SI60tNiobEjiFg_Quvxo_Cw/exec";
 
-      if (!input.value.trim()) return;
+function addMessage(sender, text) {
+  const chatbox = document.getElementById("chatbox");
+  const div = document.createElement("div");
+  div.textContent = sender + ": " + text;
+  chatbox.appendChild(div);
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
 
-      chat.value += "You: " + input.value + "\n";
+function sendMessage() {
+  const input = document.getElementById("userInput");
+  const userText = input.value.trim();
+  if (!userText) return;
 
-      const response = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ message: input.value })
-      });
+  addMessage("You", userText);
+  input.value = "";
 
-      const data = await response.json();
-      chat.value += "Bot: " + data.reply + "\n\n";
+  fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: userText })
+  })
+  .then(res => res.json())
+  .then(data => {
+    addMessage("Bot", data.reply);
+  })
+  .catch(err => {
+    addMessage("Bot", "❌ Cannot connect to server");
+    console.error(err);
+  });
+}
+</script>
 
-      input.value = "";
-    }
-  </script>
 </body>
 </html>
+
 
